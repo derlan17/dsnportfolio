@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfólio - Derlan S. do Nascimento</title>
+    <!-- Configuração do Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Cor de fundo profissional DSN (Azul Marinho Escuro) */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #003366; /* Azul Marinho Profissional */
+            color: #f0f0f0; /* Texto Claro */
+        }
+        /* Cor de acento e botões (Azul Vívido Profissional) */
+        .btn-primary {
+            background-color: #007BFF;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #0069d9;
+            transform: translateY(-2px);
+        }
+        /* Estilo para a imagem de perfil (circular, enquadre busto) */
+        .profile-img-container {
+            width: 250px;
+            height: 250px;
+            overflow: hidden;
+            border-radius: 50%;
+            border: 5px solid #007BFF;
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+            margin: 0 auto;
+        }
+        .profile-img {
+            /* Foca a imagem do busto para cima */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+        /* Efeito de destaque ao passar o rato nas secções de experiência */
+        .experience-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        /* Estilo para a caixa de mensagem de sucesso/erro */
+        #message-box {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        /* Estilização para o Iframe de Pitch Pessoal (Shorts) */
+        .responsive-video {
+            position: relative;
+            width: 100%;
+            height: 0;
+            /* Proporção 9:16 para Shorts (16/9 = 1.7777... -> 100 / 1.7777... = 56.25% - mas para shorts é 16:9, então 16/9 = 1.777, para mobile 9/16 = 0.5625, para desktop usar 16:9 - vou usar um tamanho fixo para manter a proporção de Short num cartão */
+            padding-bottom: 177.77%; /* Proporção de vídeo vertical (9:16) */
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        .responsive-video iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0.5rem;
+        }
+        @media (min-width: 768px) {
+            .responsive-video {
+                /* Para ecrãs maiores, podemos limitar a largura */
+                max-width: 350px;
+                padding-bottom: 62.5%; /* Proporção mais horizontal para desktop, 16:9. shorts não ficam bons em desktop mas vamos adaptar */
+                max-height: 250px;
+                padding-bottom: 0;
+                height: 250px;
+            }
+            .responsive-video iframe {
+                object-fit: contain;
+            }
+        }
+        
+    </style>
+</head>
+<body class="leading-relaxed">
+
+    <!-- Caixa de Mensagem (Toast) -->
+    <div id="message-box" class="hidden p-4 rounded-lg shadow-xl text-white"></div>
+
+    <!-- Barra de Navegação -->
+    <header class="sticky top-0 z-50 bg-[#003366] bg-opacity-95 shadow-lg">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Nome/Logo DSN -->
+                <a href="#home" class="text-3xl font-extrabold text-[#007BFF] tracking-wider transition duration-300 hover:text-white">DSN</a>
+                
+                <!-- Links de Navegação (Desktop) -->
+                <div class="hidden md:flex space-x-6">
+                    <a href="#home" class="nav-link text-lg font-semibold hover:text-[#007BFF] transition duration-300" data-key="nav_home">Início</a>
+                    <a href="#about" class="nav-link text-lg font-semibold hover:text-[#007BFF] transition duration-300" data-key="nav_about">Sobre Mim</a>
+                    <a href="#education" class="nav-link text-lg font-semibold hover:text-[#007BFF] transition duration-300" data-key="nav_education">Escolaridade</a>
+                    <a href="#experience" class="nav-link text-lg font-semibold hover:text-[#007BFF] transition duration-300" data-key="nav_experience">Experiências</a>
+                    <a href="#why-hire" class="nav-link text-lg font-semibold hover:text-[#007BFF] transition duration-300" data-key="nav_why">Porquê Contratar?</a>
+                    <a href="#contact" class="nav-link text-lg font-semibold hover:text-[#007BFF] transition duration-300" data-key="nav_contact">Contacto</a>
+                </div>
+
+                <!-- Seletor de Idioma -->
+                <button id="lang-toggle" class="btn-primary px-3 py-1 rounded-full text-sm font-bold shadow-md transition duration-300">
+                    EN
+                </button>
+
+                <!-- Menu Mobile (Hamburger) -->
+                <button id="menu-btn" class="md:hidden text-white focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Menu Dropdown Mobile -->
+        <div id="mobile-menu" class="hidden md:hidden bg-[#003366]">
+            <a href="#home" class="nav-link block px-4 py-2 text-base font-medium hover:bg-[#007BFF]" data-key="nav_home">Início</a>
+            <a href="#about" class="nav-link block px-4 py-2 text-base font-medium hover:bg-[#007BFF]" data-key="nav_about">Sobre Mim</a>
+            <a href="#education" class="nav-link block px-4 py-2 text-base font-medium hover:bg-[#007BFF]" data-key="nav_education">Escolaridade</a>
+            <a href="#experience" class="nav-link block px-4 py-2 text-base font-medium hover:bg-[#007BFF]" data-key="nav_experience">Experiências</a>
+            <a href="#why-hire" class="nav-link block px-4 py-2 text-base font-medium hover:bg-[#007BFF]" data-key="nav_why">Porquê Contratar?</a>
+            <a href="#contact" class="nav-link block px-4 py-2 text-base font-medium hover:bg-[#007BFF]" data-key="nav_contact">Contacto</a>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main>
+        <!-- 1. Página Inicial (Home) -->
+        <section id="home" class="min-h-[90vh] flex items-center justify-center text-center px-4 py-20 bg-cover bg-center" style="background-color: #003366;">
+            <div class="max-w-4xl space-y-6">
+                <h1 id="home_title" class="text-5xl sm:text-7xl font-black uppercase tracking-tight text-white">Derlan Santos do Nascimento</h1>
+                <p id="home_subtitle" class="text-xl sm:text-3xl font-light text-[#007BFF]">Estudante de Programação de Sistemas de Informação</p>
+                <p id="home_description" class="text-lg sm:text-xl font-medium text-gray-300 max-w-2xl mx-auto">A combinar a experiência de gestão e engenharia com o entusiasmo pela tecnologia. Em busca de uma primeira oportunidade profissional para transformar o potencial em soluções de software.</p>
+                <a href="#about" id="home_button" class="inline-block btn-primary text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl uppercase tracking-wider mt-8">Saiba Mais Sobre Mim</a>
+            </div>
+        </section>
+
+        <!-- 2. Sobre Mim (About Me) -->
+        <section id="about" class="py-20 px-4 bg-[#004488]">
+            <div class="max-w-7xl mx-auto">
+                <h2 id="about_title" class="text-4xl font-bold text-center mb-16 uppercase border-b-4 border-[#007BFF] pb-2 inline-block mx-auto">Sobre Mim</h2>
+                <div class="grid md:grid-cols-3 gap-12 items-center">
+                    <!-- Coluna da Esquerda: Imagem e Botões -->
+                    <div class="md:col-span-1 space-y-6 text-center">
+                        <div class="profile-img-container shadow-2xl">
+                            <!-- Nota: Substitua o URL da imagem pelo seu ficheiro Derlan.jpg hospedado ou por um base64 se disponível. Estou a usar um placeholder para demonstração. -->
+                            <img src="uploaded:Derlan.jpg-659a194b-f471-495a-a317-030a59edcb67" onerror="this.onerror=null; this.src='https://placehold.co/250x300/003366/FFFFFF?text=Derlan+S.N.'" alt="Foto de Perfil Derlan S.N." class="profile-img">
+                        </div>
+                        <a href="uploaded:CV Derlan Nascimento.pdf" download="CV_Derlan_Nascimento.pdf" id="about_download_cv" class="btn-primary block w-full md:w-auto mx-auto px-6 py-3 rounded-lg text-lg font-bold shadow-lg mt-6">Descarregar CV</a>
+                        
+                        <div class="bg-[#003366] p-4 rounded-lg shadow-xl">
+                            <h3 id="about_pitch_text" class="text-xl font-semibold mb-3">Assista ao meu Pitch Pessoal</h3>
+                            <!-- Embed do YouTube Short: https://www.youtube.com/shorts/uB-4mqI5-4U -->
+                            <div class="responsive-video">
+                                <iframe src="https://www.youtube.com/embed/uB-4mqI5-4U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna da Direita: Texto Sobre Mim -->
+                    <div class="md:col-span-2 space-y-6 text-lg">
+                        <h3 id="about_header" class="text-3xl font-semibold text-[#007BFF] mb-4">Um Percurso de Liderança e Inovação</h3>
+                        <p id="about_body_p1">Com uma trajetória profissional sólida em gestão, telecomunicações e engenharia civil, trago uma perspetiva única e uma capacidade de liderança comprovada para o desenvolvimento de sistemas de informação. Durante 8 anos, atuei como gestor, aprimorando a capacidade de gerir pessoas, otimizar processos comerciais e tomar decisões estratégicas.</p>
+                        <p id="about_body_p2">Atualmente, sou estudante de Programação de Sistema de Informação na ESTGA, Universidade de Aveiro, e estou a dedicar-me a adquirir conhecimentos aprofundados em Python e JavaScript. O meu objetivo é aplicar a minha experiência de vida e competências de resolução de problemas em projetos de software que gerem valor real para a sua empresa.</p>
+                        <p id="about_body_p3" class="font-bold text-[#007BFF]">Sou a pessoa ideal para a sua equipa, pois sei como traduzir objetivos de negócio complexos em soluções práticas e eficientes, trazendo uma visão de 360 graus que vai além do código.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Nível de Escolaridade (Education) -->
+        <section id="education" class="py-20 px-4 bg-[#003366]">
+            <div class="max-w-7xl mx-auto">
+                <h2 id="education_title" class="text-4xl font-bold text-center mb-16 uppercase border-b-4 border-[#007BFF] pb-2 inline-block mx-auto">Nível de Escolaridade</h2>
+                <h3 id="education_header" class="text-3xl font-semibold text-center mb-12 text-gray-200">Formação Sólida, Foco no Futuro Digital</h3>
+                
+                <div class="grid md:grid-cols-4 gap-8">
+                    <!-- Item 1: Programação (Foco Principal) -->
+                    <div class="col-span-1 bg-[#004488] p-6 rounded-xl shadow-2xl transition duration-300 hover:bg-[#007BFF] hover:text-white">
+                        <p id="education_item1_details" class="text-sm font-light mb-1 opacity-80">ESTGA, Universidade de Aveiro - (Atualmente)</p>
+                        <h4 id="education_item1_title" class="text-xl font-bold">Técnico Superior Profissional em Programação de Sistema de Informação</h4>
+                        <span class="inline-block mt-3 text-xs font-semibold px-3 py-1 bg-[#003366] rounded-full text-white">Foco Digital</span>
+                    </div>
+
+                    <!-- Item 2: Pós-Graduação -->
+                    <div class="col-span-1 bg-[#004488] p-6 rounded-xl shadow-xl transition duration-300 hover:bg-[#007BFF] hover:text-white">
+                        <p id="education_item2_details" class="text-sm font-light mb-1 opacity-80">(2021)</p>
+                        <h4 id="education_item2_title" class="text-xl font-bold">Pós-Graduação em Gestão de Obras</h4>
+                        <span class="inline-block mt-3 text-xs font-semibold px-3 py-1 bg-[#003366] rounded-full text-white">Gestão Técnica</span>
+                    </div>
+
+                    <!-- Item 3: Engenharia Civil -->
+                    <div class="col-span-1 bg-[#004488] p-6 rounded-xl shadow-xl transition duration-300 hover:bg-[#007BFF] hover:text-white">
+                        <p id="education_item3_details" class="text-sm font-light mb-1 opacity-80">(Concluída em 2021)</p>
+                        <h4 id="education_item3_title" class="text-xl font-bold">Engenharia Civil (Licenciatura)</h4>
+                        <span class="inline-block mt-3 text-xs font-semibold px-3 py-1 bg-[#003366] rounded-full text-white">Base Estrutural</span>
+                    </div>
+                    
+                    <!-- Item 4: Administração -->
+                    <div class="col-span-1 bg-[#004488] p-6 rounded-xl shadow-xl transition duration-300 hover:bg-[#007BFF] hover:text-white">
+                        <p id="education_item4_details" class="text-sm font-light mb-1 opacity-80">(Concluída em 2010)</p>
+                        <h4 id="education_item4_title" class="text-xl font-bold">Administração de Empresas (Licenciatura)</h4>
+                        <span class="inline-block mt-3 text-xs font-semibold px-3 py-1 bg-[#003366] rounded-full text-white">Visão de Negócio</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Experiências Profissionais (Professional Experience) -->
+        <section id="experience" class="py-20 px-4 bg-[#004488]">
+            <div class="max-w-7xl mx-auto">
+                <h2 id="experience_title" class="text-4xl font-bold text-center mb-16 uppercase border-b-4 border-[#007BFF] pb-2 inline-block mx-auto">Experiências Profissionais</h2>
+                <h3 id="experience_header" class="text-3xl font-semibold text-center mb-12 text-gray-200">Diversidade de Funções, Domínio de Competências</h3>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Experiência 1: Engenheiro Civil -->
+                    <div class="experience-card bg-[#003366] p-8 rounded-xl shadow-xl transition duration-300">
+                        <h4 id="exp_item1_title" class="text-2xl font-bold mb-2 text-[#007BFF]">Engenheiro Civil</h4>
+                        <p id="exp_item1_duration" class="text-sm font-medium mb-4 text-gray-400">4 Anos</p>
+                        <p id="exp_item1_description">Trabalho como Engenheiro Civil, aplicando conhecimentos técnicos e de gestão de projetos em obras, garantindo a qualidade e o cumprimento de prazos.</p>
+                    </div>
+                    
+                    <!-- Experiência 2: Gestor de Rádios e Telecomunicações -->
+                    <div class="experience-card bg-[#003366] p-8 rounded-xl shadow-xl transition duration-300">
+                        <h4 id="exp_item2_title" class="text-2xl font-bold mb-2 text-[#007BFF]">Gestor de Rádios e Telecomunicações</h4>
+                        <p id="exp_item2_duration" class="text-sm font-medium mb-4 text-gray-400">8 Anos</p>
+                        <p id="exp_item2_description">Gestão completa de setores de rádio e telecomunicações, incluindo a liderança de equipas e a gestão do setor comercial, com foco em resultados e otimização.</p>
+                    </div>
+
+                    <!-- Experiência 3: Assessor Parlamentar -->
+                    <div class="experience-card bg-[#003366] p-8 rounded-xl shadow-xl transition duration-300">
+                        <h4 id="exp_item3_title" class="text-2xl font-bold mb-2 text-[#007BFF]">Assessor Parlamentar</h4>
+                        <p id="exp_item3_duration" class="text-sm font-medium mb-4 text-gray-400">5 Anos</p>
+                        <p id="exp_item3_description">Responsável pela gestão da agenda, coordenação de compromissos e apoio administrativo e estratégico a um deputado, exigindo organização e discrição.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Porque Deve Me Contratar (Why Hire Me) -->
+        <section id="why-hire" class="py-20 px-4 bg-[#003366] text-center">
+            <div class="max-w-4xl mx-auto">
+                <h2 id="why_title" class="text-4xl font-bold mb-16 uppercase border-b-4 border-[#007BFF] pb-2 inline-block mx-auto">Porquê Deve Me Contratar?</h2>
+                
+                <div class="bg-[#004488] p-10 rounded-xl shadow-2xl space-y-6">
+                    <h3 id="why_quote" class="text-3xl font-extrabold text-[#007BFF]">Proatividade, Dedicação e Visão de Futuro</h3>
+                    <p id="why_text" class="text-xl font-medium text-gray-200">Sou um profissional proativo, com um desejo constante de buscar novos conhecimentos e encarar desafios com grande dedicação. A minha experiência anterior deu-me uma base de soft skills robusta em gestão, comunicação e resolução de problemas. Sou um iniciante na área de programação, mas possuo conhecimento prático e entusiasmo em <span class="text-yellow-400 font-extrabold">Python</span> e <span class="text-yellow-400 font-extrabold">JavaScript</span>, e estou determinado a evoluir rapidamente para me tornar um desenvolvedor valioso para a sua equipa.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Contato (Contact) -->
+        <section id="contact" class="py-20 px-4 bg-[#004488]">
+            <div class="max-w-7xl mx-auto">
+                <h2 id="contact_title" class="text-4xl font-bold text-center mb-16 uppercase border-b-4 border-[#007BFF] pb-2 inline-block mx-auto">Contacto</h2>
+                <p id="contact_subtitle" class="text-xl text-center mb-12 text-gray-300">Fale comigo! Estou disponível para novos desafios.</p>
+
+                <div class="grid md:grid-cols-2 gap-12">
+                    <!-- Formulário de Contacto Simples -->
+                    <div class="bg-[#003366] p-8 rounded-xl shadow-2xl">
+                        <form id="contact-form" class="space-y-6">
+                            <div>
+                                <label for="name" id="form_name" class="block text-sm font-medium text-gray-300">Nome</label>
+                                <input type="text" id="name" name="name" required class="mt-1 block w-full p-3 rounded-lg border-gray-600 bg-[#004488] text-white focus:ring-[#007BFF] focus:border-[#007BFF]">
+                            </div>
+                            <div>
+                                <label for="email" id="form_email" class="block text-sm font-medium text-gray-300">E-mail</label>
+                                <input type="email" id="email" name="email" required class="mt-1 block w-full p-3 rounded-lg border-gray-600 bg-[#004488] text-white focus:ring-[#007BFF] focus:border-[#007BFF]">
+                            </div>
+                            <div>
+                                <label for="message" id="form_message" class="block text-sm font-medium text-gray-300">Mensagem</label>
+                                <textarea id="message" name="message" rows="4" required class="mt-1 block w-full p-3 rounded-lg border-gray-600 bg-[#004488] text-white focus:ring-[#007BFF] focus:border-[#007BFF]"></textarea>
+                            </div>
+                            <button type="submit" id="form_send" class="btn-primary w-full py-3 rounded-lg text-lg font-bold shadow-lg uppercase">Enviar Mensagem</button>
+                        </form>
+                    </div>
+
+                    <!-- Informações de Contacto e Redes Sociais -->
+                    <div class="bg-[#003366] p-8 rounded-xl shadow-2xl space-y-8">
+                        <div class="space-y-4">
+                            <!-- E-mail -->
+                            <div class="flex items-center space-x-4">
+                                <span class="text-3xl text-[#007BFF]">&#9993;</span>
+                                <div>
+                                    <p id="contact_email" class="font-semibold text-lg">E-mail</p>
+                                    <a href="mailto:derlan17@gmail.com" class="text-gray-300 hover:text-[#007BFF] transition">derlan17@gmail.com</a>
+                                </div>
+                            </div>
+                            <!-- Telemóvel -->
+                            <div class="flex items-center space-x-4">
+                                <span class="text-3xl text-[#007BFF]">&#128222;</span>
+                                <div>
+                                    <p id="contact_phone" class="font-semibold text-lg">Telemóvel</p>
+                                    <a href="tel:+351935824964" class="text-gray-300 hover:text-[#007BFF] transition">(+351) 935 824 964</a>
+                                </div>
+                            </div>
+                            <!-- LinkedIn -->
+                            <div class="flex items-center space-x-4">
+                                <span class="text-3xl text-[#007BFF]">&#128279;</span>
+                                <div>
+                                    <p id="contact_linkedin" class="font-semibold text-lg">LinkedIn</p>
+                                    <a href="https://www.linkedin.com/in/derlan-santos-do-nascimento-938a39112/" target="_blank" class="text-gray-300 hover:text-[#007BFF] transition">/derlan-santos-do-nascimento...</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="bg-[#002244] py-8 text-center text-gray-400">
+        <p>&copy; 2024 DSN. Todos os direitos reservados. Design Profissional e Responsivo.</p>
+    </footer>
+
+    <!-- Script para Linguagem e Interatividade -->
+    <script>
+        // Conteúdo em Português (pt) e Inglês (en)
+        const content = {
+            'pt': {
+                nav_home: "Início",
+                nav_about: "Sobre Mim",
+                nav_education: "Escolaridade",
+                nav_experience: "Experiências",
+                nav_why: "Porquê Contratar?",
+                nav_contact: "Contacto",
+                // Home Section
+                home_title: "Derlan Santos do Nascimento",
+                home_subtitle: "Estudante de Programação de Sistemas de Informação",
+                home_description: "A combinar a experiência de gestão e engenharia com o entusiasmo pela tecnologia. Em busca de uma primeira oportunidade profissional para transformar o potencial em soluções de software.",
+                home_button: "Saiba Mais Sobre Mim",
+                // About Section
+                about_title: "Sobre Mim",
+                about_pitch_text: "Assista ao meu Pitch Pessoal",
+                about_download_cv: "Descarregar CV",
+                about_header: "Um Percurso de Liderança e Inovação",
+                about_body_p1: "Com uma trajetória profissional sólida em gestão, telecomunicações e engenharia civil, trago uma perspetiva única e uma capacidade de liderança comprovada para o desenvolvimento de sistemas de informação. Durante 8 anos, atuei como gestor, aprimorando a capacidade de gerir pessoas, otimizar processos comerciais e tomar decisões estratégicas.",
+                about_body_p2: "Atualmente, sou estudante de Programação de Sistema de Informação na ESTGA, Universidade de Aveiro, e estou a dedicar-me a adquirir conhecimentos aprofundados em Python e JavaScript. O meu objetivo é aplicar a minha experiência de vida e competências de resolução de problemas em projetos de software que gerem valor real para a sua empresa.",
+                about_body_p3: "Sou a pessoa ideal para a sua equipa, pois sei como traduzir objetivos de negócio complexos em soluções práticas e eficientes, trazendo uma visão de 360 graus que vai além do código.",
+                // Education Section
+                education_title: "Nível de Escolaridade",
+                education_header: "Formação Sólida, Foco no Futuro Digital",
+                education_item1_title: "Técnico Superior Profissional em Programação de Sistema de Informação",
+                education_item1_details: "ESTGA, Universidade de Aveiro - (Atualmente)",
+                education_item2_title: "Pós-Graduação em Gestão de Obras",
+                education_item2_details: "Concluída em 2021",
+                education_item3_title: "Engenharia Civil (Licenciatura)",
+                education_item3_details: "Concluída em 2021",
+                education_item4_title: "Administração de Empresas (Licenciatura)",
+                education_item4_details: "Concluída em 2010",
+                // Experience Section
+                experience_title: "Experiências Profissionais",
+                experience_header: "Diversidade de Funções, Domínio de Competências",
+                exp_item1_title: "Engenheiro Civil",
+                exp_item1_duration: "4 Anos",
+                exp_item1_description: "Trabalho como Engenheiro Civil, aplicando conhecimentos técnicos e de gestão de projetos em obras, garantindo a qualidade e o cumprimento de prazos.",
+                exp_item2_title: "Gestor de Rádios e Telecomunicações",
+                exp_item2_duration: "8 Anos",
+                exp_item2_description: "Gestão completa de setores de rádio e telecomunicações, incluindo a liderança de equipas e a gestão do setor comercial, com foco em resultados e otimização.",
+                exp_item3_title: "Assessor Parlamentar",
+                exp_item3_duration: "5 Anos",
+                exp_item3_description: "Responsável pela gestão da agenda, coordenação de compromissos e apoio administrativo e estratégico a um deputado, exigindo organização e discrição.",
+                // Why Hire Me Section
+                why_title: "Porquê Deve Me Contratar?",
+                why_quote: "Proatividade, Dedicação e Visão de Futuro",
+                why_text: "Sou um profissional proativo, com um desejo constante de buscar novos conhecimentos e encarar desafios com grande dedicação. A minha experiência anterior deu-me uma base de soft skills robusta em gestão, comunicação e resolução de problemas. Sou um iniciante na área de programação, mas possuo conhecimento prático e entusiasmo em **Python** e **JavaScript**, e estou determinado a evoluir rapidamente para me tornar um desenvolvedor valioso para a sua equipa.",
+                // Contact Section
+                contact_title: "Contacto",
+                contact_subtitle: "Fale comigo! Estou disponível para novos desafios.",
+                contact_email: "E-mail",
+                contact_phone: "Telemóvel",
+                contact_linkedin: "LinkedIn",
+                form_name: "Nome",
+                form_email: "E-mail",
+                form_message: "Mensagem",
+                form_send: "Enviar Mensagem",
+                form_success: "Mensagem enviada com sucesso! Em breve entrarei em contacto.",
+                form_error: "Ocorreu um erro. Por favor, tente novamente ou envie um e-mail diretamente.",
+            },
+            'en': {
+                nav_home: "Home",
+                nav_about: "About Me",
+                nav_education: "Education",
+                nav_experience: "Experience",
+                nav_why: "Why Hire Me?",
+                nav_contact: "Contact",
+                // Home Section
+                home_title: "Derlan Santos do Nascimento",
+                home_subtitle: "Information Systems Programming Student",
+                home_description: "Combining management and engineering experience with enthusiasm for technology. Seeking a first professional opportunity to transform potential into software solutions.",
+                home_button: "Learn More About Me",
+                // About Section
+                about_title: "About Me",
+                about_pitch_text: "Watch My Personal Pitch",
+                about_download_cv: "Download CV",
+                about_header: "A Journey of Leadership and Innovation",
+                about_body_p1: "With a solid professional background in management, telecommunications, and civil engineering, I bring a unique perspective and proven leadership ability to information systems development. For 8 years, I served as a manager, honing my skills in people management, optimizing commercial processes, and making strategic decisions.",
+                about_body_p2: "I am currently studying Information Systems Programming at ESTGA, University of Aveiro, and am dedicated to acquiring in-depth knowledge of Python and JavaScript. My goal is to apply my life experience and problem-solving skills to software projects that generate real value for your company.",
+                about_body_p3: "I am the ideal person for your team because I know how to translate complex business objectives into practical and efficient solutions, bringing a 360-degree vision that goes beyond the code.",
+                // Education Section
+                education_title: "Education Level",
+                education_header: "Solid Background, Focus on the Digital Future",
+                education_item1_title: "Higher Professional Technician in Information Systems Programming",
+                education_item1_details: "ESTGA, University of Aveiro - (Currently Studying)",
+                education_item2_title: "Post-Graduation in Construction Management",
+                education_item2_details: "Completed in 2021",
+                education_item3_title: "Civil Engineering (Degree)",
+                education_item3_details: "Completed in 2021",
+                education_item4_title: "Business Administration (Degree)",
+                education_item4_details: "Completed in 2010",
+                // Experience Section
+                experience_title: "Professional Experience",
+                experience_header: "Diversity of Roles, Mastery of Skills",
+                exp_item1_title: "Civil Engineer",
+                exp_item1_duration: "4 Years",
+                exp_item1_description: "Working as a Civil Engineer, applying technical and project management knowledge in construction works, ensuring quality and deadline compliance.",
+                exp_item2_title: "Radio and Telecommunications Manager",
+                exp_item2_duration: "8 Years",
+                exp_item2_description: "Complete management of radio and telecommunications sectors, including team leadership and commercial sector management, focusing on results and optimization.",
+                exp_item3_title: "Parliamentary Advisor",
+                exp_item3_duration: "5 Years",
+                exp_item3_description: "Responsible for agenda management, commitment coordination, and administrative and strategic support to a member of parliament, requiring organization and discretion.",
+                // Why Hire Me Section
+                why_title: "Why Should You Hire Me?",
+                why_quote: "Proactivity, Dedication, and Future Vision",
+                why_text: "I am a proactive professional with a constant desire to seek new knowledge and tackle challenges with great dedication. My previous experience has given me a strong foundation of soft skills in management, communication, and problem-solving. I am a beginner in the programming field, but I have practical knowledge and enthusiasm for **Python** and **JavaScript**, and I am determined to grow rapidly to become a valuable developer for your team.",
+                // Contact Section
+                contact_title: "Contact",
+                contact_subtitle: "Get in touch! I am available for new challenges.",
+                contact_email: "Email",
+                contact_phone: "Mobile Phone",
+                contact_linkedin: "LinkedIn",
+                form_name: "Name",
+                form_email: "Email",
+                form_message: "Message",
+                form_send: "Send Message",
+                form_success: "Message sent successfully! I will be in touch shortly.",
+                form_error: "An error occurred. Please try again or send an email directly.",
+            }
+        };
+
+        let currentLang = 'pt';
+
+        // Função para atualizar o texto na página
+        function updateContent(lang) {
+            const elements = document.querySelectorAll('[data-key]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (content[lang][key]) {
+                    el.textContent = content[lang][key];
+                }
+            });
+
+            // Atualizar o texto de elementos com IDs
+            for (const key in content[lang]) {
+                const el = document.getElementById(key);
+                if (el) {
+                    el.innerHTML = content[lang][key];
+                }
+            }
+
+            // Atualizar o texto do botão de idioma
+            const langToggle = document.getElementById('lang-toggle');
+            langToggle.textContent = lang === 'pt' ? 'EN' : 'PT';
+            document.documentElement.lang = lang; // Atualiza o atributo lang do HTML
+        }
+
+        // Evento de clique no botão de idioma
+        document.getElementById('lang-toggle').addEventListener('click', () => {
+            currentLang = currentLang === 'pt' ? 'en' : 'pt';
+            updateContent(currentLang);
+        });
+
+        // Inicialização: aplicar o conteúdo em português ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            updateContent(currentLang);
+
+            // Funcionalidade de Smooth Scrolling e Menu Mobile
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const navLinks = document.querySelectorAll('a[href^="#"]');
+
+            // Toggle Menu Mobile
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Adiciona smooth scrolling e esconde o menu mobile após o clique
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 64, // Ajusta para a altura da barra de navegação
+                            behavior: 'smooth'
+                        });
+                    }
+
+                    // Esconde o menu mobile se estiver aberto
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Lógica de Placeholder para Formulário de Contacto
+            const contactForm = document.getElementById('contact-form');
+            const messageBox = document.getElementById('message-box');
+
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Simulação de envio de formulário
+                const successMessage = content[currentLang]['form_success'];
+                const errorMessage = content[currentLang]['form_error'];
+                
+                // Simulação de sucesso
+                showMessage(successMessage, 'bg-green-500');
+                
+                contactForm.reset();
+            });
+
+            function showMessage(text, bgColor) {
+                messageBox.textContent = text;
+                messageBox.className = `${bgColor} p-4 rounded-lg shadow-xl text-white block`;
+                setTimeout(() => {
+                    messageBox.classList.add('hidden');
+                }, 5000); // 5 segundos
+            }
+        });
+    </script>
+</body>
+</html>
